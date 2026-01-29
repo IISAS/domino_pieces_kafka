@@ -1,2 +1,2 @@
-# [Pieces repository name]
-[Description of this Pieces repository]
+# domino_pieces_kafka
+Domino pieces for Apache Kafka.
