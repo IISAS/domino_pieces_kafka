@@ -10,10 +10,10 @@
             "KafkaProducerPiece"
         ],
         "secrets": [
-            "ssl_ca_pem",
             "ssl_certificate_pem",
+            "ssl_ca_pem",
             "ssl_key_pem"
         ],
-        "source_image": "ghcr.io/iisas/domino_pieces_kafka:development-group0"
+        "source_image": "ghcr.io/iisas/domino_pieces_kafka:0.1.0-group0"
     }
 }
