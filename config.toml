@@ -7,6 +7,8 @@ REGISTRY_NAME = "iisas"
 REPOSITORY_NAME = "domino_pieces_kafka"
 REPOSITORY_LABEL = "Domino pieces for Apache Kafka"
 
+#
 # The version of this Pieces release
 # Attention: changing this will create a new release
+#
 VERSION = "0.1.0"
