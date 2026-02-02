@@ -1,24 +1,19 @@
 {
     "group0": {
         "dependency": {
-            "dockerfile": "Dockerfile_1",
+            "dockerfile": "Dockerfile",
             "requirements_file": null
         },
         "pieces": [
-            "ExampleSineWavePiece"
+            "KafkaTopicCreatorPiece",
+            "KafkaConsumerPiece",
+            "KafkaProducerPiece"
         ],
-        "secrets": [],
-        "source_image": "ghcr.io/enter-your-registry-name-here/enter-your-repository-name-here:0.1.0-group0"
-    },
-    "group1": {
-        "dependency": {
-            "dockerfile": null,
-            "requirements_file": "requirements_0.txt"
-        },
-        "pieces": [
-            "ExampleSleepPiece"
+        "secrets": [
+            "ssl_ca_pem",
+            "ssl_certificate_pem",
+            "ssl_key_pem"
         ],
-        "secrets": [],
-        "source_image": "ghcr.io/enter-your-registry-name-here/enter-your-repository-name-here:0.1.0-group1"
+        "source_image": "ghcr.io/iisas/domino_pieces_kafka:development-group0"
     }
 }

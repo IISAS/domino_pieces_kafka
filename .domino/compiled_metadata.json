@@ -1,26 +1,28 @@
 {
-    "ExampleSineWavePiece": {
-        "name": "ExampleSineWavePiece",
+    "KafkaTopicCreatorPiece": {
+        "name": "KafkaTopicCreatorPiece",
         "dependency": {
-            "dockerfile": "Dockerfile_1",
+            "dockerfile": "Dockerfile",
             "requirements_file": null
         },
         "tags": [
-            "Example"
+            "Kafka",
+            "admin",
+            "stream"
         ],
         "style": {
-            "node_label": "Example Sine Piece",
+            "node_label": "Kafka Topic Creator Piece",
             "node_type": "default",
             "node_style": {
                 "backgroundColor": "#ebebeb"
             },
             "useIcon": true,
-            "icon_class_name": "fa-solid:database",
+            "icon_class_name": "fa7-solid:folder-plus",
             "iconStyle": {
                 "cursor": "pointer"
             }
         },
-        "description": "This is an example of a piece that uses Dockerfile for dependencies.",
+        "description": "Topic creation for Kafka",
         "container_resources": {
             "requests": {
                 "cpu": 100,
@@ -32,24 +34,96 @@
             }
         },
         "input_schema": {
-            "description": "Sleep Piece Input Model",
             "properties": {
-                "frequency": {
-                    "default": 5,
-                    "description": "Frequency of the sine wave in Hz",
-                    "title": "Frequency",
+                "bootstrap_servers": {
+                    "default": [
+                        "127.0.0.1:9093"
+                    ],
+                    "description": "Kafka broker addresses",
+                    "items": {
+                        "type": "string"
+                    },
+                    "title": "bootstrap.servers",
+                    "type": "array"
+                },
+                "security_protocol": {
+                    "anyOf": [
+                        {
+                            "enum": [
+                                "PLAINTEXT",
+                                "SSL"
+                            ],
+                            "type": "string"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
+                    "default": null,
+                    "description": "Protocol used to communicate with brokers.",
+                    "title": "security.protocol"
+                },
+                "ssl_endpoint_identification_algorithm": {
+                    "default": "none",
+                    "description": "The endpoint identification algorithm to validate server hostname using server certificate.",
+                    "title": "ssl.endpoint.identification.algorithm",
+                    "type": "string"
+                },
+                "topics": {
+                    "default": [
+                        "topic.test1",
+                        "topic.test2"
+                    ],
+                    "description": "Topic names",
+                    "items": {
+                        "type": "string"
+                    },
+                    "title": "topics",
+                    "type": "array"
+                },
+                "exists_ok": {
+                    "default": false,
+                    "description": "If exists.ok and topic exists, the topic is deleted and created again. If exists.ok=False and topic exists an exception is raised.",
+                    "title": "exists.ok",
+                    "type": "boolean"
+                },
+                "num_partitions": {
+                    "default": 6,
+                    "description": "Number of partitions per topic",
+                    "title": "num.partitions",
                     "type": "integer"
                 },
-                "duration": {
-                    "default": 1,
-                    "description": "Duration of the sine wave signal in seconds",
-                    "title": "Duration",
+                "replication_factor": {
+                    "default": 3,
+                    "description": "Number of replications",
+                    "title": "replication.factor",
                     "type": "integer"
                 },
-                "sample_rate": {
-                    "default": 1000,
-                    "description": "Sample rate of the sine wave signal.",
-                    "title": "Sample Rate",
+                "cleanup_policy": {
+                    "default": [
+                        "delete"
+                    ],
+                    "description": "This config designates the retention policy to use on log segments. The \"delete\" policy (which is the default) will discard old segments when their retention time or size limit has been reached. The \"compact\" policy will enable log compaction, which retains the latest value for each key. It is also possible to specify both policies in a comma-separated list (e.g. \"delete,compact\"). In this case, old segments will be discarded per the retention time and size configuration, while retained segments will be compacted.",
+                    "items": {
+                        "enum": [
+                            "compact",
+                            "delete"
+                        ],
+                        "type": "string"
+                    },
+                    "title": "cleanup.policy",
+                    "type": "array"
+                },
+                "retention_ms": {
+                    "default": 604800000,
+                    "description": "This configuration controls the maximum time we will retain a log before we will discard old log segments to free up space if we are using the \"delete\" retention policy. This represents an SLA on how soon consumers must read their data. If set to -1, no time limit is applied. Additionally, retention.ms configuration operates independently of \"segment.ms\" and \"segment.bytes\" configurations. Moreover, it triggers the rolling of new segment if the retention.ms condition is satisfied.",
+                    "title": "retention.ms",
+                    "type": "integer"
+                },
+                "min_insync_replicas": {
+                    "default": 2,
+                    "description": "Specifies the minimum number of in-sync replicas (including the leader) required for a write to succeed when a producer sets acks to \"all\" (or \"-1\"). In the acks=all case, every in-sync replica must acknowledge a write for it to be considered successful. E.g., if a topic has replication.factor of 3 and the ISR set includes all three replicas, then all three replicas must acknowledge an acks=all write for it to succeed, even if min.insync.replicas happens to be less than 3. If acks=all and the current ISR set contains fewer than min.insync.replicas members, then the producer will raise an exception (either NotEnoughReplicas or NotEnoughReplicasAfterAppend).\nRegardless of the acks setting, the messages will not be visible to the consumers until they are replicated to all in-sync replicas and the min.insync.replicas condition is met.\nWhen used together, min.insync.replicas and acks allow you to enforce greater durability guarantees. A typical scenario would be to create a topic with a replication factor of 3, set min.insync.replicas to 2, and produce with acks of \"all\". This ensures that a majority of replicas must persist a write before it's considered successful by the producer and it's visible to consumers.\n\nNote that when the Eligible Leader Replicas feature is enabled, the semantics of this config changes. Please refer to the ELR section for more info.",
+                    "title": "min.insync.replicas",
                     "type": "integer"
                 }
             },
@@ -57,45 +131,114 @@
             "type": "object"
         },
         "output_schema": {
-            "description": "Sleep Piece Output Model",
             "properties": {
-                "message": {
-                    "description": "Sleep piece executed",
-                    "title": "Message",
+                "bootstrap_servers": {
+                    "description": "Kafka broker addresses",
+                    "items": {
+                        "type": "string"
+                    },
+                    "title": "bootstrap.servers",
+                    "type": "array"
+                },
+                "security_protocol": {
+                    "description": "Protocol used to communicate with brokers.",
+                    "enum": [
+                        "PLAINTEXT",
+                        "SSL"
+                    ],
+                    "title": "security.protocol",
                     "type": "string"
+                },
+                "topics_created": {
+                    "default": [],
+                    "description": "Names of created topics",
+                    "items": {
+                        "type": "string"
+                    },
+                    "title": "topics_created",
+                    "type": "array"
                 }
             },
             "required": [
-                "message"
+                "bootstrap_servers",
+                "security_protocol"
             ],
             "title": "OutputModel",
             "type": "object"
         },
-        "secrets_schema": null,
-        "source_url": "https://github.com/IISAS/domino_pieces_kafka/tree/main/pieces/ExampleSineWavePiece"
+        "secrets_schema": {
+            "properties": {
+                "ssl_ca_pem": {
+                    "anyOf": [
+                        {
+                            "type": "string"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
+                    "default": null,
+                    "description": "CA certificate in PEM format as a single line string with new line characters replaced with \\n.",
+                    "title": "ssl.ca.pem"
+                },
+                "ssl_certificate_pem": {
+                    "anyOf": [
+                        {
+                            "type": "string"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
+                    "default": null,
+                    "description": "Client's certificate in PEM format as a single line string with new line characters replaced with \\n.",
+                    "title": "ssl.certificate.pem"
+                },
+                "ssl_key_pem": {
+                    "anyOf": [
+                        {
+                            "format": "password",
+                            "type": "string",
+                            "writeOnly": true
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
+                    "default": null,
+                    "description": "Client's private key in PEM format as a single line string with new line characters replaced with \\n.",
+                    "title": "ssl.key.pem"
+                }
+            },
+            "title": "SecretsModel",
+            "type": "object"
+        },
+        "source_url": "https://github.com/IISAS/domino_pieces_kafka/tree/main/pieces/KafkaTopicCreatorPiece"
     },
-    "ExampleSleepPiece": {
-        "name": "ExampleSleepPiece",
+    "KafkaConsumerPiece": {
+        "name": "KafkaConsumerPiece",
         "dependency": {
-            "dockerfile": null,
-            "requirements_file": "requirements_0.txt"
+            "dockerfile": "Dockerfile",
+            "requirements_file": null
         },
         "tags": [
-            "Example"
+            "Kafka",
+            "consumer",
+            "stream"
         ],
         "style": {
-            "node_label": "Example Sleep Piece",
+            "node_label": "Kafka Consumer Piece",
             "node_type": "default",
             "node_style": {
                 "backgroundColor": "#ebebeb"
             },
             "useIcon": true,
-            "icon_class_name": "fa-solid:database",
+            "icon_class_name": "fa7-solid:right-to-bracket",
             "iconStyle": {
                 "cursor": "pointer"
             }
         },
-        "description": "This is an example of a simple Domino Piece that sleep for N seconds",
+        "description": "Consumer for Kafka to read streaming data",
         "container_resources": {
             "requests": {
                 "cpu": 100,
@@ -107,34 +250,362 @@
             }
         },
         "input_schema": {
-            "description": "Sleep Piece Input Model",
             "properties": {
-                "sleep_time": {
-                    "default": 1,
-                    "description": "Number of seconds to sleep",
-                    "title": "Sleep Time",
+                "bootstrap_servers": {
+                    "default": [
+                        "127.0.0.1:9093"
+                    ],
+                    "description": "Kafka broker addresses",
+                    "items": {
+                        "type": "string"
+                    },
+                    "title": "bootstrap.servers",
+                    "type": "array"
+                },
+                "security_protocol": {
+                    "default": "PLAINTEXT",
+                    "description": "Protocol used to communicate with brokers.",
+                    "enum": [
+                        "PLAINTEXT",
+                        "SSL"
+                    ],
+                    "title": "security.protocol",
+                    "type": "string"
+                },
+                "topics": {
+                    "default": [
+                        "topic.default1",
+                        "topic.default2"
+                    ],
+                    "description": "Topic names",
+                    "items": {
+                        "type": "string"
+                    },
+                    "title": "topics",
+                    "type": "array"
+                },
+                "ssl_endpoint_identification_algorithm": {
+                    "default": "none",
+                    "description": "The endpoint identification algorithm to validate server hostname using server certificate.",
+                    "title": "ssl.endpoint.identification.algorithm",
+                    "type": "string"
+                },
+                "client_id": {
+                    "default": "test-client",
+                    "description": "An id string to pass to the server when making requests. The purpose of this is to be able to track the source of requests beyond just ip/port by allowing a logical application name to be included in server-side request logging.",
+                    "title": "client.id",
+                    "type": "string"
+                },
+                "group_id": {
+                    "default": "test-consumer-group",
+                    "description": "A unique string that identifies the consumer group this consumer belongs to. This property is required if the consumer uses either the group management functionality by using subscribe(topic) or the Kafka-based offset management strategy.",
+                    "title": "group.id",
+                    "type": "string"
+                },
+                "auto_offset_reset": {
+                    "default": "latest",
+                    "description": "What to do when there is no initial offset in Kafka or if the current offset does not exist any more on the server (e.g. because that data has been deleted):\nearliest: automatically reset the offset to the earliest offset\nlatest: automatically reset the offset to the latest offset\nby_duration:<duration>: automatically reset the offset to a configured <duration> from the current timestamp. <duration> must be specified in ISO8601 format (PnDTnHnMn.nS). Negative duration is not allowed.\nnone: throw exception to the consumer if no previous offset is found for the consumer's group\nanything else: throw exception to the consumer.",
+                    "title": "auto.offset.reset",
+                    "type": "string"
+                },
+                "poll_timeout": {
+                    "default": 60,
+                    "description": "Timeout in seconds for polling messages.",
+                    "title": "poll.timeout",
                     "type": "number"
+                },
+                "msg_value_encoding": {
+                    "default": "utf-8",
+                    "description": "Encoding of messages",
+                    "title": "msg.value.encoding",
+                    "type": "string"
                 }
             },
             "title": "InputModel",
             "type": "object"
         },
         "output_schema": {
-            "description": "Sleep Piece Output Model",
             "properties": {
-                "message": {
-                    "description": "Sleep piece executed",
-                    "title": "Message",
+                "bootstrap_servers": {
+                    "description": "Kafka broker addresses",
+                    "items": {
+                        "type": "string"
+                    },
+                    "title": "bootstrap.servers",
+                    "type": "array"
+                },
+                "security_protocol": {
+                    "description": "Protocol used to communicate with brokers.",
+                    "enum": [
+                        "PLAINTEXT",
+                        "SSL"
+                    ],
+                    "title": "security.protocol",
+                    "type": "string"
+                },
+                "messages_file_path": {
+                    "description": "File with consumed messages.",
+                    "title": "messages.file.path",
+                    "type": "string"
+                },
+                "topics": {
+                    "description": "Topic name",
+                    "items": {
+                        "type": "string"
+                    },
+                    "title": "topics",
+                    "type": "array"
+                },
+                "group_id": {
+                    "description": "Kafka consumer group",
+                    "title": "group.id",
+                    "type": "string"
+                },
+                "msg_value_encoding": {
+                    "description": "Encoding of messages; i.e., 'utf-8', 'base64'",
+                    "title": "msg.value.encoding",
                     "type": "string"
                 }
             },
             "required": [
-                "message"
+                "bootstrap_servers",
+                "security_protocol",
+                "messages_file_path",
+                "topics",
+                "group_id",
+                "msg_value_encoding"
             ],
             "title": "OutputModel",
             "type": "object"
         },
-        "secrets_schema": null,
-        "source_url": "https://github.com/IISAS/domino_pieces_kafka/tree/main/pieces/ExampleSleepPiece"
+        "secrets_schema": {
+            "properties": {
+                "ssl_ca_pem": {
+                    "anyOf": [
+                        {
+                            "type": "string"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
+                    "default": null,
+                    "description": "CA certificate in PEM format as a single line string with new line characters replaced with \\n.",
+                    "title": "ssl.ca.pem"
+                },
+                "ssl_certificate_pem": {
+                    "anyOf": [
+                        {
+                            "type": "string"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
+                    "default": null,
+                    "description": "Client's certificate in PEM format as a single line string with new line characters replaced with \\n.",
+                    "title": "ssl.certificate.pem"
+                },
+                "ssl_key_pem": {
+                    "anyOf": [
+                        {
+                            "format": "password",
+                            "type": "string",
+                            "writeOnly": true
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
+                    "default": null,
+                    "description": "Client's private key in PEM format as a single line string with new line characters replaced with \\n.",
+                    "title": "ssl.key.pem"
+                }
+            },
+            "title": "SecretsModel",
+            "type": "object"
+        },
+        "source_url": "https://github.com/IISAS/domino_pieces_kafka/tree/main/pieces/KafkaConsumerPiece"
+    },
+    "KafkaProducerPiece": {
+        "name": "KafkaProducerPiece",
+        "dependency": {
+            "dockerfile": "Dockerfile",
+            "requirements_file": null
+        },
+        "tags": [
+            "Kafka",
+            "producer",
+            "stream"
+        ],
+        "style": {
+            "node_label": "Kafka Producer Piece",
+            "node_type": "default",
+            "node_style": {
+                "backgroundColor": "#ebebeb"
+            },
+            "useIcon": true,
+            "icon_class_name": "fa7-solid:right-from-bracket",
+            "iconStyle": {
+                "cursor": "pointer"
+            }
+        },
+        "description": "Producer for Kafka to write streaming data",
+        "container_resources": {
+            "requests": {
+                "cpu": 100,
+                "memory": 128
+            },
+            "limits": {
+                "cpu": 500,
+                "memory": 512
+            }
+        },
+        "input_schema": {
+            "properties": {
+                "bootstrap_servers": {
+                    "default": [
+                        "127.0.0.1:9093"
+                    ],
+                    "description": "The Kafka broker address",
+                    "items": {
+                        "type": "string"
+                    },
+                    "title": "bootstrap.servers",
+                    "type": "array"
+                },
+                "security_protocol": {
+                    "default": "PLAINTEXT",
+                    "description": "Protocol used to communicate with brokers.",
+                    "enum": [
+                        "PLAINTEXT",
+                        "SSL"
+                    ],
+                    "title": "security.protocol",
+                    "type": "string"
+                },
+                "ssl_endpoint_identification_algorithm": {
+                    "default": "none",
+                    "description": "The endpoint identification algorithm to validate server hostname using server certificate.",
+                    "title": "ssl.endpoint.identification.algorithm",
+                    "type": "string"
+                },
+                "acks_raw": {
+                    "default": "all",
+                    "description": "The number of acknowledgments the producer requires the leader to have received before considering a request complete.",
+                    "enum": [
+                        "fire_and_forget",
+                        "wait_for_leader",
+                        "all"
+                    ],
+                    "title": "acks",
+                    "type": "string"
+                },
+                "enable_idempotence_bool": {
+                    "default": true,
+                    "description": "Whether to ensure that exactly one copy of each message is written in the stream.",
+                    "title": "enable.idempotence",
+                    "type": "boolean"
+                },
+                "messages_file_path": {
+                    "default": "messages.jsonl",
+                    "description": "Path to a file containing messages to produce by this producer.",
+                    "title": "messages.file.path",
+                    "type": "string"
+                }
+            },
+            "title": "InputModel",
+            "type": "object"
+        },
+        "output_schema": {
+            "properties": {
+                "bootstrap_servers": {
+                    "description": "Kafka broker addresses",
+                    "items": {
+                        "type": "string"
+                    },
+                    "title": "bootstrap.servers",
+                    "type": "array"
+                },
+                "security_protocol": {
+                    "description": "Protocol used to communicate with brokers.",
+                    "enum": [
+                        "PLAINTEXT",
+                        "SSL"
+                    ],
+                    "title": "security.protocol",
+                    "type": "string"
+                },
+                "topics": {
+                    "description": "Topic name",
+                    "items": {
+                        "type": "string"
+                    },
+                    "title": "topics",
+                    "type": "array"
+                },
+                "num_produced_messages": {
+                    "description": "The number of produced messages.",
+                    "title": "num.produced.messages",
+                    "type": "integer"
+                }
+            },
+            "required": [
+                "bootstrap_servers",
+                "security_protocol",
+                "topics",
+                "num_produced_messages"
+            ],
+            "title": "OutputModel",
+            "type": "object"
+        },
+        "secrets_schema": {
+            "properties": {
+                "ssl_ca_pem": {
+                    "anyOf": [
+                        {
+                            "type": "string"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
+                    "default": null,
+                    "description": "CA certificate in PEM format as a single line string with new line characters replaced with \\n.",
+                    "title": "ssl.ca.pem"
+                },
+                "ssl_certificate_pem": {
+                    "anyOf": [
+                        {
+                            "type": "string"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
+                    "default": null,
+                    "description": "Client's certificate in PEM format as a single line string with new line characters replaced with \\n.",
+                    "title": "ssl.certificate.pem"
+                },
+                "ssl_key_pem": {
+                    "anyOf": [
+                        {
+                            "format": "password",
+                            "type": "string",
+                            "writeOnly": true
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
+                    "default": null,
+                    "description": "Client's private key in PEM format as a single line string with new line characters replaced with \\n.",
+                    "title": "ssl.key.pem"
+                }
+            },
+            "title": "SecretsModel",
+            "type": "object"
+        },
+        "source_url": "https://github.com/IISAS/domino_pieces_kafka/tree/main/pieces/KafkaProducerPiece"
     }
 }
