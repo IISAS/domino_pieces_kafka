@@ -100,7 +100,7 @@ class KafkaConsumerPiece(BasePiece):
                     break
                 msg_value = msg.value()
                 msg_value_decoded = decode_msg_value(msg_value, input_data.msg_value_encoding)
-                self.logger.info(f"Consumed message: {msg_value_decoded} from topic {msg.topic()}")
+                self.logger.debug(f"Consumed message: {msg_value_decoded} from topic {msg.topic()}")
                 data = {
                     'timestamp': msg.timestamp(),
                     'topic': msg.topic(),
@@ -114,6 +114,11 @@ class KafkaConsumerPiece(BasePiece):
                 }
                 fp.write(json.dumps(data) + '\n')
                 num_messages += 1
+                if num_messages > 0 and (
+                    (num_messages < 10e3 and num_messages % 10e2 == 0) or
+                    (num_messages % 10e3 == 0)
+                ):
+                    self.logger.info(f'consumed {num_messages // 1000:,}k messages so far')
             time_delta = time.time() - last_poll_time
             poll_timeout -= time_delta
 
