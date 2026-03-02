@@ -17,7 +17,7 @@ class SecretsModel(models.SecretsModel):
     pass
 
 
-class InputModel(models.BaseModel):
+class InputModel(models.InputModel):
     topics: List[str] = Field(
         title="topics",
         default=["topic.default1", "topic.default2"],
@@ -101,7 +101,7 @@ anything else: throw exception to the consumer."""
     )
 
 
-class OutputModel(models.BaseModel):
+class OutputModel(models.OutputModel):
     messages_file_path: str = Field(
         title="messages.file.path",
         description="File with consumed messages."

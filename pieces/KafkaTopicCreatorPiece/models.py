@@ -6,11 +6,11 @@ from pieces import models
 from pieces.common import CleanupPolicy
 
 
-class SecretsModel(models.BaseModel):
+class SecretsModel(models.SecretsModel):
     pass
 
 
-class InputModel(models.BaseModel):
+class InputModel(models.InputModel):
     topics: List[str] = Field(
         title="topics",
         default=["topic.test1", "topic.test2"],
@@ -73,7 +73,7 @@ class InputModel(models.BaseModel):
     #
 
 
-class OutputModel(models.BaseModel):
+class OutputModel(models.OutputModel):
     topics_created: List[str] = Field(
         title="topics_created",
         default=[],

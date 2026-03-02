@@ -2,8 +2,8 @@ from __future__ import annotations
 
 import domino
 
-from pieces.common import SecurityProtocol
-from pieces.models import InputModel, SecretsModel
+from .common import SecurityProtocol
+from .models import InputModel, SecretsModel
 
 
 class BasePiece(domino.base_piece.BasePiece):
