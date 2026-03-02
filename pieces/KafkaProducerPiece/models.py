@@ -18,17 +18,17 @@ class InputModel(InputModel):
     # https://docs.confluent.io/platform/current/installation/configuration/producer-configs.html#acks
     # https://kafka.apache.org/41/configuration/producer-configs/#producerconfigs_acks
     acks_raw: Acks = Field(
-        title="acks",
-        default="all",
+        title=Acks.title(),
+        default=Acks.all,
         description="The number of acknowledgments the producer requires the leader to have received before considering a request complete.",
     )
 
     @property
     def acks(self) -> str:
         return {
-            f'{Acks.all}': "all",
-            f'{Acks.fire_and_forget}': "0",
-            f'{Acks.wait_for_leader}': "1",
+            Acks.fire_and_forget: "0",
+            Acks.wait_for_leader: "1",
+            Acks.all: "all",
         }[self.acks_raw]
 
     # https://docs.confluent.io/platform/current/installation/configuration/producer-configs.html#enable-idempotence

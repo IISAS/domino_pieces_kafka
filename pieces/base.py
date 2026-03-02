@@ -8,19 +8,19 @@ from .models import InputModel, SecretsModel
 
 class BasePiece(DominoBasePiece):
 
-    def validate_ssl_secrets(self, input: InputModel, secrets: SecretsModel) -> None:
+    def validate_ssl_secrets(self, input_data: InputModel, secrets_data: SecretsModel) -> None:
 
-        if input.security_protocol == SecurityProtocol.SSL:
-            if secrets is None:
+        if input_data.security_protocol == SecurityProtocol.SSL:
+            if secrets_data is None:
                 raise ValueError(
                     "Secrets must be provided when security.protocol is 'SSL'"
                 )
 
             missing = [
                 name for name, value in {
-                    "ssl.ca.pem": secrets.ssl_ca_pem,
-                    "ssl.certificate.pem": secrets.ssl_certificate_pem,
-                    "ssl.key.pem": secrets.ssl_key_pem.get_secret_value() if secrets.ssl_key_pem else None,
+                    "ssl.ca.pem": secrets_data.ssl_ca_pem,
+                    "ssl.certificate.pem": secrets_data.ssl_certificate_pem,
+                    "ssl.key.pem": secrets_data.ssl_key_pem.get_secret_value() if secrets_data.ssl_key_pem else None,
                 }.items()
                 if value is None or value.strip() == ""
             ]
@@ -31,5 +31,5 @@ class BasePiece(DominoBasePiece):
                     f"{', '.join(missing)}"
                 )
 
-    def piece_function(self, input: InputModel, secrets: SecretsModel) -> None:
-        self.validate_ssl_secrets(input, secrets)
+    def piece_function(self, input_data: InputModel, secrets_data: SecretsModel) -> None:
+        self.validate_ssl_secrets(input_data, secrets_data)

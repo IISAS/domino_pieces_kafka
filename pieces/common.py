@@ -53,9 +53,9 @@ class CleanupPolicy(PieceEnum):
 
 
 class Acks(PieceEnum):
-    all = "all"
-    file_and_forget = "fire_and_forget"
+    fire_and_forget = "fire_and_forget"
     wait_for_leader = "wait_for_leader"
+    all = "all"
 
     @classmethod
     def title(cls) -> str:

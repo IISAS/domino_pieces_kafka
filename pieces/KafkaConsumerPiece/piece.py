@@ -24,7 +24,7 @@ class KafkaConsumerPiece(BasePiece):
 
     def piece_function(self, input_data: InputModel, secrets_data: SecretsModel):
 
-        self.super().piece_function()
+        super().piece_function(input_data=input_data, secrets_data=secrets_data)
 
         self.logger.info(f'group_id:{input_data.group_id}')
 
@@ -127,6 +127,7 @@ class KafkaConsumerPiece(BasePiece):
         return OutputModel(
             bootstrap_servers=input_data.bootstrap_servers,
             security_protocol=input_data.security_protocol,
+            ssl_endpoint_identification_algorithm=input_data.ssl_endpoint_identification_algorithm,
             messages_file_path=messages_file_path,
             topics=input_data.topics,
             group_id=input_data.group_id,

@@ -14,31 +14,31 @@ class KafkaProducerPiece(BasePiece):
 
     def piece_function(
         self,
-        input: InputModel,
-        secrets: SecretsModel
+        input_data: InputModel,
+        secrets_data: SecretsModel
     ):
-        self.super().piece_function(input, secrets)
+        super().piece_function(input_data, secrets_data)
 
-        messages_file_path = Path(input.messages_file_path)
+        messages_file_path = Path(input_data.messages_file_path)
         if not messages_file_path.exists():
             raise Exception(f"messages file not found: {messages_file_path}")
 
         producer_conf = {
             # 'debug': 'security,broker,conf',
             # 'log_level': 7,
-            'acks': input.acks,
-            'bootstrap.servers': ','.join(input.bootstrap_servers),
-            'enable.idempotence': input.enable_idempotence,
-            'security.protocol': input.security_protocol,
+            'acks': input_data.acks,
+            'bootstrap.servers': ','.join(input_data.bootstrap_servers),
+            'enable.idempotence': input_data.enable_idempotence,
+            'security.protocol': input_data.security_protocol,
             **(
                 {
-                    'ssl.ca.pem': secrets.ssl_ca_pem.replace("\\n", "\n"),
-                    'ssl.certificate.pem': secrets.ssl_certificate_pem.replace("\\n", "\n"),
-                    'ssl.key.pem': secrets.ssl_key_pem.get_secret_value().replace("\\n", "\n"),
+                    'ssl.ca.pem': secrets_data.ssl_ca_pem.replace("\\n", "\n"),
+                    'ssl.certificate.pem': secrets_data.ssl_certificate_pem.replace("\\n", "\n"),
+                    'ssl.key.pem': secrets_data.ssl_key_pem.get_secret_value().replace("\\n", "\n"),
                     # https://github.com/confluentinc/librdkafka/issues/4349
-                    'ssl.endpoint.identification.algorithm': input.ssl_endpoint_identification_algorithm,
-                } if input.security_protocol is not None
-                     and input.security_protocol.lower().strip() == 'ssl'
+                    'ssl.endpoint.identification.algorithm': input_data.ssl_endpoint_identification_algorithm,
+                } if input_data.security_protocol is not None
+                     and input_data.security_protocol.lower().strip() == 'ssl'
                 else {}
             ),
         }
@@ -122,8 +122,9 @@ class KafkaProducerPiece(BasePiece):
 
         # Return output
         return OutputModel(
-            bootstrap_servers=input.bootstrap_servers,
-            security_protocol=input.security_protocol,
+            bootstrap_servers=input_data.bootstrap_servers,
+            security_protocol=input_data.security_protocol,
+            ssl_endpoint_identification_algorithm=input_data.ssl_endpoint_identification_algorithm,
             num_produced_messages=num_delivered_messages,
             topics=list(topics),
         )

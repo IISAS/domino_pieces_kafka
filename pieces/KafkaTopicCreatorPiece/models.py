@@ -52,7 +52,7 @@ class InputModel(InputModel):
     #
 
     # https://kafka.apache.org/41/configuration/topic-configs/#topicconfigs_cleanup.policy
-    cleanup_policy: CleanupPolicy = Field(
+    cleanup_policy: List[CleanupPolicy] = Field(
         title=CleanupPolicy.title(),
         default=[CleanupPolicy.delete],
         description="This config designates the retention policy to use on log segments. The \"delete\" policy (which is the default) will discard old segments when their retention time or size limit has been reached. The \"compact\" policy will enable log compaction, which retains the latest value for each key. It is also possible to specify both policies in a comma-separated list (e.g. \"delete,compact\"). In this case, old segments will be discarded per the retention time and size configuration, while retained segments will be compacted.",
