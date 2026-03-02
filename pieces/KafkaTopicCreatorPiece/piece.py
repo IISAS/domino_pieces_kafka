@@ -9,11 +9,7 @@ from confluent_kafka import KafkaError
 from confluent_kafka.admin import AdminClient
 from confluent_kafka.cimpl import NewTopic, KafkaException
 
-try:
-    from ..pieces.base import BasePiece
-except ImportError:
-    from pieces.base import BasePiece
-
+from pieces.base import BasePiece
 from .models import InputModel, OutputModel, SecretsModel
 
 

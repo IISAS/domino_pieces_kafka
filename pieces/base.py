@@ -1,12 +1,12 @@
 from __future__ import annotations
 
-import domino
+from domino.base_piece import BasePiece as DominoBasePiece
 
 from .common import SecurityProtocol
 from .models import InputModel, SecretsModel
 
 
-class BasePiece(domino.base_piece.BasePiece):
+class BasePiece(DominoBasePiece):
 
     def validate_ssl_secrets(self, input: InputModel, secrets: SecretsModel) -> None:
 
