@@ -5,7 +5,10 @@ from typing import List
 
 from pydantic import Field, field_validator
 
-from pieces import models
+try:
+    from ..models import InputModel, OutputModel, SecretsModel
+except ImportError:
+    from pieces.models import InputModel, OutputModel, SecretsModel
 
 # ISO8601 duration regex (simplified for PnDTnHnMn.nS, no negative durations)
 ISO8601_DURATION_REGEX = re.compile(
@@ -13,11 +16,11 @@ ISO8601_DURATION_REGEX = re.compile(
 )
 
 
-class SecretsModel(models.SecretsModel):
+class SecretsModel(SecretsModel):
     pass
 
 
-class InputModel(models.InputModel):
+class InputModel(InputModel):
     topics: List[str] = Field(
         title="topics",
         default=["topic.default1", "topic.default2"],
@@ -101,7 +104,7 @@ anything else: throw exception to the consumer."""
     )
 
 
-class OutputModel(models.OutputModel):
+class OutputModel(OutputModel):
     messages_file_path: str = Field(
         title="messages.file.path",
         description="File with consumed messages."

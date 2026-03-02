@@ -9,7 +9,7 @@ from confluent_kafka import KafkaError
 from confluent_kafka.admin import AdminClient
 from confluent_kafka.cimpl import NewTopic, KafkaException
 
-from pieces import base
+from pieces.base import BasePiece
 from .models import InputModel, OutputModel, SecretsModel
 
 
@@ -23,7 +23,7 @@ def decode_msg_value(msg_value, encoding):
     return msg_value
 
 
-class KafkaTopicCreatorPiece(base.BasePiece):
+class KafkaTopicCreatorPiece(BasePiece):
 
     def piece_function(
         self,

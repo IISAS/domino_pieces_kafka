@@ -2,15 +2,19 @@ from typing import List
 
 from pydantic import Field, field_validator
 
-from pieces import models
-from pieces.common import CleanupPolicy
+try:
+    from ..common import CleanupPolicy
+    from ..models import InputModel, OutputModel, SecretsModel
+except ImportError:
+    from pieces.common import CleanupPolicy
+    from pieces.models import InputModel, OutputModel, SecretsModel
 
 
-class SecretsModel(models.SecretsModel):
+class SecretsModel(SecretsModel):
     pass
 
 
-class InputModel(models.InputModel):
+class InputModel(InputModel):
     topics: List[str] = Field(
         title="topics",
         default=["topic.test1", "topic.test2"],
@@ -73,7 +77,7 @@ class InputModel(models.InputModel):
     #
 
 
-class OutputModel(models.OutputModel):
+class OutputModel(OutputModel):
     topics_created: List[str] = Field(
         title="topics_created",
         default=[],

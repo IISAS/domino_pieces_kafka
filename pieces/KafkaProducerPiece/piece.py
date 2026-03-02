@@ -6,11 +6,11 @@ from pathlib import Path
 from confluent_kafka import Producer
 from confluent_kafka.serialization import StringSerializer
 
-from pieces import base
+from pieces.base import BasePiece
 from .models import InputModel, OutputModel, SecretsModel
 
 
-class KafkaProducerPiece(base.BasePiece):
+class KafkaProducerPiece(BasePiece):
 
     def piece_function(
         self,

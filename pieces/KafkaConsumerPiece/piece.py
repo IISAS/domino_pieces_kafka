@@ -6,7 +6,7 @@ from pathlib import Path
 
 from confluent_kafka import Consumer
 
-from pieces import base
+from pieces.base import BasePiece
 from .models import InputModel, OutputModel, SecretsModel
 
 
@@ -20,7 +20,7 @@ def decode_msg_value(msg_value, encoding):
     return msg_value
 
 
-class KafkaConsumerPiece(base.BasePiece):
+class KafkaConsumerPiece(BasePiece):
 
     def piece_function(self, input_data: InputModel, secrets_data: SecretsModel):
 
