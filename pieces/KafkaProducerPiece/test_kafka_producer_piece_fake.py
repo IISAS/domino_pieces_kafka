@@ -11,6 +11,8 @@ from domino.testing.utils import skip_envs
 from mockafka import FakeAdminClientImpl, FakeConsumer, FakeProducer
 from mockafka.admin_client import NewTopic
 
+from pieces.common import SecurityProtocol
+
 logging.basicConfig(
     level=logging.INFO,
     format="%(asctime)s %(levelname)s %(name)s: %(message)s"
@@ -104,7 +106,7 @@ def test_kafka_producer_piece_fake_kafka():
 
         input_data = {
             "bootstrap_servers": ["fake-broker"],
-            "security_protocol": "PLAINTEXT",
+            "security_protocol": SecurityProtocol.PLAINTEXT,
             "messages_file_path": messages_path,
         }
         secrets_data = {

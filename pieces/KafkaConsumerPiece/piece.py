@@ -5,8 +5,8 @@ import time
 from pathlib import Path
 
 from confluent_kafka import Consumer
-from domino.base_piece import BasePiece
 
+from pieces import base
 from .models import InputModel, OutputModel, SecretsModel
 
 
@@ -20,36 +20,13 @@ def decode_msg_value(msg_value, encoding):
     return msg_value
 
 
-class KafkaConsumerPiece(BasePiece):
-
-    def validate_ssl_secrets(self, input: InputModel, secrets: SecretsModel) -> None:
-
-        if input.security_protocol and input.security_protocol.upper() == "SSL":
-            if secrets is None:
-                raise ValueError(
-                    "Secrets must be provided when security.protocol is 'SSL'"
-                )
-
-            missing = [
-                name for name, value in {
-                    "ssl.ca.pem": secrets.ssl_ca_pem,
-                    "ssl.certificate.pem": secrets.ssl_certificate_pem,
-                    "ssl.key.pem": secrets.ssl_key_pem.get_secret_value() if secrets.ssl_key_pem else None,
-                }.items()
-                if value is None or value.strip() == ""
-            ]
-
-            if missing:
-                raise ValueError(
-                    f"When security.protocol='SSL', the following secrets must be set: "
-                    f"{', '.join(missing)}"
-                )
+class KafkaConsumerPiece(base.BasePiece):
 
     def piece_function(self, input_data: InputModel, secrets_data: SecretsModel):
 
-        self.validate_ssl_secrets(input_data, secrets_data)
+        self.super().piece_function()
 
-        print(input_data.group_id)
+        self.logger.info(f'group_id:{input_data.group_id}')
 
         consumer_conf = {
             # 'debug': 'security,broker,conf',

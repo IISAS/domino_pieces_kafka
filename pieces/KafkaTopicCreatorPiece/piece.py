@@ -25,55 +25,33 @@ def decode_msg_value(msg_value, encoding):
 
 class KafkaTopicCreatorPiece(BasePiece):
 
-    def validate_ssl_secrets(self, input: InputModel, secrets: SecretsModel) -> None:
-
-        if input.security_protocol and input.security_protocol.upper() == "SSL":
-            if secrets is None:
-                raise ValueError(
-                    "Secrets must be provided when security.protocol is 'SSL'"
-                )
-
-            missing = [
-                name for name, value in {
-                    "ssl.ca.pem": secrets.ssl_ca_pem,
-                    "ssl.certificate.pem": secrets.ssl_certificate_pem,
-                    "ssl.key.pem": secrets.ssl_key_pem.get_secret_value() if secrets.ssl_key_pem else None,
-                }.items()
-                if value is None or value.strip() == ""
-            ]
-
-            if missing:
-                raise ValueError(
-                    f"When security.protocol='SSL', the following secrets must be set: "
-                    f"{', '.join(missing)}"
-                )
-
     def piece_function(
         self,
-        input_data: InputModel,
-        secrets_data: SecretsModel
+        input: InputModel,
+        secrets: SecretsModel
     ):
+        self.super().piece_function(input, secrets)
 
         self.logger.info("Creating topics...")
         start_time = time.time()
 
         with tempfile.TemporaryDirectory() as tmp_dir:
 
-            self.validate_ssl_secrets(input_data, secrets_data)
+            self.validate_ssl_secrets(input, secrets)
 
             admin_client_conf = {
                 # 'debug': 'security,broker,conf',
                 # 'log_level': 7,
-                'bootstrap.servers': ','.join(input_data.bootstrap_servers),
+                'bootstrap.servers': ','.join(input.bootstrap_servers),
                 **(
                     {
-                        'security.protocol': input_data.security_protocol,
-                        'ssl.ca.pem': secrets_data.ssl_ca_pem.replace("\\n", "\n"),
-                        'ssl.certificate.pem': secrets_data.ssl_certificate_pem.replace("\\n", "\n"),
-                        'ssl.key.pem': secrets_data.ssl_key_pem.get_secret_value().replace("\\n", "\n"),
-                        'ssl.endpoint.identification.algorithm': input_data.ssl_endpoint_identification_algorithm,
-                    } if input_data.security_protocol is not None
-                         and input_data.security_protocol.lower().strip() == 'ssl'
+                        'security.protocol': input.security_protocol,
+                        'ssl.ca.pem': secrets.ssl_ca_pem.replace("\\n", "\n"),
+                        'ssl.certificate.pem': secrets.ssl_certificate_pem.replace("\\n", "\n"),
+                        'ssl.key.pem': secrets.ssl_key_pem.get_secret_value().replace("\\n", "\n"),
+                        'ssl.endpoint.identification.algorithm': input.ssl_endpoint_identification_algorithm,
+                    } if input.security_protocol is not None
+                         and input.security_protocol.lower().strip() == 'ssl'
                     else {}
                 ),
             }
@@ -83,14 +61,14 @@ class KafkaTopicCreatorPiece(BasePiece):
             new_topics = [
                 NewTopic(
                     topic=topic_name,
-                    num_partitions=input_data.num_partitions,
-                    replication_factor=input_data.replication_factor,
+                    num_partitions=input.num_partitions,
+                    replication_factor=input.replication_factor,
                     config={
-                        "cleanup.policy": ','.join(input_data.cleanup_policy),
-                        "retention.ms": input_data.retention_ms,
-                        "min.insync.replicas": input_data.min_insync_replicas,
+                        "cleanup.policy": ','.join(input.cleanup_policy),
+                        "retention.ms": input.retention_ms,
+                        "min.insync.replicas": input.min_insync_replicas,
                     },
-                ) for topic_name in input_data.topics
+                ) for topic_name in input.topics
             ]
 
             topics_created = []
@@ -100,7 +78,7 @@ class KafkaTopicCreatorPiece(BasePiece):
                     future.result()
                     topics_created.append(topic)
                 except KafkaException as e:
-                    if e.args[0].code() == KafkaError.TOPIC_ALREADY_EXISTS and input_data.exists_ok:
+                    if e.args[0].code() == KafkaError.TOPIC_ALREADY_EXISTS and input.exists_ok:
                         self.logger.warning(f"Topic '{topic}' already exists.")
                         topics_created.append(topic)
                         pass
@@ -127,7 +105,7 @@ class KafkaTopicCreatorPiece(BasePiece):
 
             # Return output
             return OutputModel(
-                bootstrap_servers=input_data.bootstrap_servers,
-                security_protocol=input_data.security_protocol,
+                bootstrap_servers=input.bootstrap_servers,
+                security_protocol=input.security_protocol,
                 topics_created=topics_created,
             )

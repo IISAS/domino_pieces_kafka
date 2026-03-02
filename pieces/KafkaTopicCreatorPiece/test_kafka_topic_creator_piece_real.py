@@ -5,6 +5,8 @@ from confluent_kafka.admin import AdminClient
 from domino.testing import piece_dry_run
 from domino.testing.utils import skip_envs
 
+from pieces.common import SecurityProtocol
+
 logging.basicConfig(
     level=logging.INFO,
     format="%(asctime)s %(levelname)s %(name)s: %(message)s",
@@ -18,7 +20,7 @@ def test_with_real_kafka_cluster():
     input_data = {
         "bootstrap_servers": os.getenv("bootstrap.servers", "").split(","),
         "ssl_endpoint_identification_algorithm": "none",
-        "security_protocol": "SSL",
+        "security_protocol": SecurityProtocol.SSL,
         "exists_ok": True,
         "topics": ["topic.test1", "topic.test2"],
         "cleanup_policy": ["delete"],

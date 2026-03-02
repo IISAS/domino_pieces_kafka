@@ -9,6 +9,8 @@ from domino.testing import piece_dry_run
 from mockafka import FakeConsumer, FakeProducer, FakeAdminClientImpl
 from mockafka.admin_client import NewTopic
 
+from pieces.common import SecurityProtocol
+
 logging.basicConfig(
     level=logging.INFO,
     format="%(asctime)s %(levelname)s %(name)s: %(message)s"
@@ -35,7 +37,7 @@ def test_kafka_consumer_with_fake_kafka_cluster():
     input_data = {
         "topics": ['topic.default1', 'topic.default2'],
         "bootstrap_servers": ['fake.broker'],
-        "security_protocol": "PLAINTEXT",
+        "security_protocol": SecurityProtocol.PLAINTEXT,
         "group_id": "group.default",
         "msg_value_encoding": "utf-8",
         "poll_timeout": 10,
