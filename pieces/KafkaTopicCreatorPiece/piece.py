@@ -8,8 +8,8 @@ from pathlib import Path
 from confluent_kafka import KafkaError
 from confluent_kafka.admin import AdminClient
 from confluent_kafka.cimpl import NewTopic, KafkaException
-from domino.base_piece import BasePiece
 
+from pieces import base
 from .models import InputModel, OutputModel, SecretsModel
 
 
@@ -23,7 +23,7 @@ def decode_msg_value(msg_value, encoding):
     return msg_value
 
 
-class KafkaTopicCreatorPiece(BasePiece):
+class KafkaTopicCreatorPiece(base.BasePiece):
 
     def piece_function(
         self,

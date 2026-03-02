@@ -5,12 +5,12 @@ from pathlib import Path
 
 from confluent_kafka import Producer
 from confluent_kafka.serialization import StringSerializer
-from domino.base_piece import BasePiece
 
+from pieces import base
 from .models import InputModel, OutputModel, SecretsModel
 
 
-class KafkaProducerPiece(BasePiece):
+class KafkaProducerPiece(base.BasePiece):
 
     def piece_function(
         self,
