@@ -6,7 +6,11 @@ from pathlib import Path
 
 from confluent_kafka import Consumer
 
-from pieces.base import BasePiece
+try:
+    from pieces.base import BasePiece
+except ImportError:
+    from ..pieces.base import BasePiece
+
 from .models import InputModel, OutputModel, SecretsModel
 
 

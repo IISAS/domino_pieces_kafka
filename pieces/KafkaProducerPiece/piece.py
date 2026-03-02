@@ -6,7 +6,11 @@ from pathlib import Path
 from confluent_kafka import Producer
 from confluent_kafka.serialization import StringSerializer
 
-from pieces.base import BasePiece
+try:
+    from pieces.base import BasePiece
+except ImportError:
+    from ..pieces.base import BasePiece
+    
 from .models import InputModel, OutputModel, SecretsModel
 
 
