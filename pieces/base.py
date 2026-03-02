@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import domino
 
 from pieces.common import SecurityProtocol
