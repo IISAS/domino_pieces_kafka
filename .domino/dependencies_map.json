@@ -6,13 +6,13 @@
         },
         "pieces": [
             "KafkaTopicCreatorPiece",
-            "KafkaConsumerPiece",
-            "KafkaProducerPiece"
+            "KafkaProducerPiece",
+            "KafkaConsumerPiece"
         ],
         "secrets": [
-            "ssl_certificate_pem",
             "ssl_ca_pem",
-            "ssl_key_pem"
+            "ssl_key_pem",
+            "ssl_certificate_pem"
         ],
         "source_image": "ghcr.io/iisas/domino_pieces_kafka:development-group0"
     }
