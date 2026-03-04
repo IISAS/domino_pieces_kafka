@@ -1,16 +1,20 @@
 from typing import List
 
-from common import Acks
 from pydantic import Field
 
-from models import InputModel, OutputModel, SecretsModel
+try:
+    from .. import models
+    from ..common import Acks
+except ImportError:
+    from pieces import models
+    from pieces.common import Acks
 
 
-class SecretsModel(SecretsModel):
+class SecretsModel(models.SecretsModel):
     pass
 
 
-class InputModel(InputModel):
+class InputModel(models.InputModel):
     # https://docs.confluent.io/platform/current/installation/configuration/producer-configs.html#acks
     # https://kafka.apache.org/41/configuration/producer-configs/#producerconfigs_acks
     acks_raw: Acks = Field(
@@ -46,7 +50,7 @@ class InputModel(InputModel):
     )
 
 
-class OutputModel(OutputModel):
+class OutputModel(models.OutputModel):
     topics: List[str] = Field(
         title="topics",
         description="Topic name",
