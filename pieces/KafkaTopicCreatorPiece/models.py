@@ -1,13 +1,9 @@
 from typing import List
 
+from common import CleanupPolicy
 from pydantic import Field, field_validator
 
-try:
-    from ..common import CleanupPolicy
-    from ..models import InputModel, OutputModel, SecretsModel
-except ImportError:
-    from pieces.common import CleanupPolicy
-    from pieces.models import InputModel, OutputModel, SecretsModel
+from models import InputModel, OutputModel, SecretsModel
 
 
 class SecretsModel(SecretsModel):

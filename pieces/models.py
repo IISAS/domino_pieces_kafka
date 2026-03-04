@@ -6,7 +6,7 @@ from typing import Optional
 from pydantic import BaseModel, Field, SecretStr
 from pydantic import field_validator
 
-from .common import SecurityProtocol
+from common import SecurityProtocol
 
 
 class SecretsModel(BaseModel):

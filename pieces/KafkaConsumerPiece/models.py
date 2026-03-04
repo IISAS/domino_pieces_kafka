@@ -3,10 +3,7 @@ from typing import List
 
 from pydantic import Field, field_validator
 
-try:
-    from ..models import InputModel, OutputModel, SecretsModel
-except ImportError:
-    from pieces.models import InputModel, OutputModel, SecretsModel
+from models import InputModel, OutputModel, SecretsModel
 
 # ISO8601 duration regex (simplified for PnDTnHnMn.nS, no negative durations)
 ISO8601_DURATION_REGEX = re.compile(
