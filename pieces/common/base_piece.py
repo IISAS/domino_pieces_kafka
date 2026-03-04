@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from domino.base_piece import BasePiece as DominoBasePiece
 
-from .common import SecurityProtocol
+from .enums import SecurityProtocol
 from .models import InputModel, SecretsModel
 
 

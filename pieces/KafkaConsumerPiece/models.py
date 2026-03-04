@@ -1,12 +1,8 @@
 import re
 from typing import List
 
+from common import models
 from pydantic import Field, field_validator
-
-try:
-    from .. import models
-except ImportError:
-    from pieces import models
 
 # ISO8601 duration regex (simplified for PnDTnHnMn.nS, no negative durations)
 ISO8601_DURATION_REGEX = re.compile(

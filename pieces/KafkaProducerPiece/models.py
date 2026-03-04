@@ -1,13 +1,8 @@
 from typing import List
 
+from common import models
+from common.enums import Acks
 from pydantic import Field
-
-try:
-    from .. import models
-    from ..common import Acks
-except ImportError:
-    from pieces import models
-    from pieces.common import Acks
 
 
 class SecretsModel(models.SecretsModel):

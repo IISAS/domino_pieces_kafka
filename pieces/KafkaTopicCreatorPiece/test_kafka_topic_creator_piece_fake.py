@@ -1,11 +1,10 @@
 import logging
 from unittest.mock import patch
 
+from common.enums import SecurityProtocol
 from domino.testing import piece_dry_run
 from domino.testing.utils import skip_envs
 from mockafka import FakeAdminClientImpl, FakeConsumer
-
-from pieces.common import SecurityProtocol
 
 logging.basicConfig(
     level=logging.INFO,

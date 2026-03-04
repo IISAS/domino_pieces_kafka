@@ -5,11 +5,10 @@ from random import randint
 from time import sleep
 from unittest.mock import patch
 
+from common.enums import SecurityProtocol
 from domino.testing import piece_dry_run
 from mockafka import FakeConsumer, FakeProducer, FakeAdminClientImpl
 from mockafka.admin_client import NewTopic
-
-from pieces.common import SecurityProtocol
 
 logging.basicConfig(
     level=logging.INFO,

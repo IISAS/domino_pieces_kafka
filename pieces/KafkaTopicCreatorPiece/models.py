@@ -1,13 +1,8 @@
 from typing import List
 
+from common import models
+from common.enums import CleanupPolicy
 from pydantic import Field, field_validator
-
-try:
-    from .. import models
-    from ..common import CleanupPolicy
-except ImportError:
-    from pieces import models
-    from pieces.common import CleanupPolicy
 
 
 class SecretsModel(models.SecretsModel):

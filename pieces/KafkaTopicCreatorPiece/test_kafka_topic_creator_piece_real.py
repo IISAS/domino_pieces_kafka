@@ -1,11 +1,10 @@
 import logging
 import os
 
+from common.enums import SecurityProtocol
 from confluent_kafka.admin import AdminClient
 from domino.testing import piece_dry_run
 from domino.testing.utils import skip_envs
-
-from pieces.common import SecurityProtocol
 
 logging.basicConfig(
     level=logging.INFO,

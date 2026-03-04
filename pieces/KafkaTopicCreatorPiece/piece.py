@@ -5,11 +5,11 @@ import tempfile
 import time
 from pathlib import Path
 
+from common.base_piece import BasePiece
 from confluent_kafka import KafkaError
 from confluent_kafka.admin import AdminClient
 from confluent_kafka.cimpl import NewTopic, KafkaException
 
-from pieces.base import BasePiece
 from .models import InputModel, OutputModel, SecretsModel
 
 
