@@ -6,6 +6,7 @@ from datetime import datetime
 from random import randint
 from unittest.mock import patch
 
+from common.enums import SecurityProtocol
 from domino.testing import piece_dry_run
 from domino.testing.utils import skip_envs
 from mockafka import FakeAdminClientImpl, FakeConsumer, FakeProducer
@@ -54,12 +55,12 @@ def generate_key_name(num_keys, id) -> str:
 
 
 def generate_messages(
-        filename: str,
-        num_messages: int,
-        num_topics: int,
-        num_partitions: int,
-        num_keys: int | None,
-        create_topics: bool = False,
+    filename: str,
+    num_messages: int,
+    num_topics: int,
+    num_partitions: int,
+    num_keys: int | None,
+    create_topics: bool = False,
 ):
     """
     Create a JSONL file compatible with KafkaConsumerPiece output.
@@ -104,7 +105,7 @@ def test_kafka_producer_piece_fake_kafka():
 
         input_data = {
             "bootstrap_servers": ["fake-broker"],
-            "security_protocol": "PLAINTEXT",
+            "security_protocol": SecurityProtocol.PLAINTEXT,
             "messages_file_path": messages_path,
         }
         secrets_data = {
@@ -123,8 +124,8 @@ def test_kafka_producer_piece_fake_kafka():
         consumer = FakeConsumer()
 
         with patch(
-                "confluent_kafka.Producer",
-                return_value=producer
+            "confluent_kafka.Producer",
+            return_value=producer
         ):
 
             output = piece_dry_run(

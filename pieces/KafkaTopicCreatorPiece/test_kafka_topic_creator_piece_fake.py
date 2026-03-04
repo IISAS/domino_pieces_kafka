@@ -1,6 +1,7 @@
 import logging
 from unittest.mock import patch
 
+from common.enums import SecurityProtocol
 from domino.testing import piece_dry_run
 from domino.testing.utils import skip_envs
 from mockafka import FakeAdminClientImpl, FakeConsumer
@@ -32,7 +33,7 @@ class FakeAdminFuture:
 def test_with_fake_kafka_cluster():
     input_data = {
         "bootstrap_servers": ["fake-broker"],
-        "security_protocol": "PLAINTEXT",
+        "security_protocol": SecurityProtocol.PLAINTEXT,
         "ssl_endpoint_identification_algorithm": "none",
         "exists_ok": True,
         "topics": ["topic.test1", "topic.test2", "topic.test3"],

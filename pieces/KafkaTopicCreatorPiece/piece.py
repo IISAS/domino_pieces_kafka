@@ -5,10 +5,10 @@ import tempfile
 import time
 from pathlib import Path
 
+from common.base_piece import BasePiece
 from confluent_kafka import KafkaError
 from confluent_kafka.admin import AdminClient
 from confluent_kafka.cimpl import NewTopic, KafkaException
-from domino.base_piece import BasePiece
 
 from .models import InputModel, OutputModel, SecretsModel
 
@@ -25,34 +25,12 @@ def decode_msg_value(msg_value, encoding):
 
 class KafkaTopicCreatorPiece(BasePiece):
 
-    def validate_ssl_secrets(self, input: InputModel, secrets: SecretsModel) -> None:
-
-        if input.security_protocol and input.security_protocol.upper() == "SSL":
-            if secrets is None:
-                raise ValueError(
-                    "Secrets must be provided when security.protocol is 'SSL'"
-                )
-
-            missing = [
-                name for name, value in {
-                    "ssl.ca.pem": secrets.ssl_ca_pem,
-                    "ssl.certificate.pem": secrets.ssl_certificate_pem,
-                    "ssl.key.pem": secrets.ssl_key_pem.get_secret_value() if secrets.ssl_key_pem else None,
-                }.items()
-                if value is None or value.strip() == ""
-            ]
-
-            if missing:
-                raise ValueError(
-                    f"When security.protocol='SSL', the following secrets must be set: "
-                    f"{', '.join(missing)}"
-                )
-
     def piece_function(
         self,
         input_data: InputModel,
         secrets_data: SecretsModel
     ):
+        super().piece_function(input_data, secrets_data)
 
         self.logger.info("Creating topics...")
         start_time = time.time()
@@ -129,5 +107,6 @@ class KafkaTopicCreatorPiece(BasePiece):
             return OutputModel(
                 bootstrap_servers=input_data.bootstrap_servers,
                 security_protocol=input_data.security_protocol,
+                ssl_endpoint_identification_algorithm=input_data.ssl_endpoint_identification_algorithm,
                 topics_created=topics_created,
             )

@@ -3,34 +3,25 @@ import os
 import time
 from pathlib import Path
 
+from common.base_piece import BasePiece
 from confluent_kafka import Producer
 from confluent_kafka.serialization import StringSerializer
-from domino.base_piece import BasePiece
 
 from .models import InputModel, OutputModel, SecretsModel
 
 
 class KafkaProducerPiece(BasePiece):
 
-    def piece_function(self, input_data: InputModel, secrets_data: SecretsModel):
+    def piece_function(
+        self,
+        input_data: InputModel,
+        secrets_data: SecretsModel
+    ):
+        super().piece_function(input_data, secrets_data)
 
         messages_file_path = Path(input_data.messages_file_path)
         if not messages_file_path.exists():
             raise Exception(f"messages file not found: {messages_file_path}")
-
-        if input_data.security_protocol is not None and input_data.security_protocol.lower().strip() == "ssl":
-            if secrets_data.ssl_ca_pem is None:
-                raise Exception("Please, set the 'ssl_ca_pem' in the Repository Secrets section.")
-            else:
-                self.logger.info('ssl_ca_pem: %s' % secrets_data.ssl_ca_pem)
-            if secrets_data.ssl_certificate_pem is None:
-                raise Exception("Please, set the 'ssl_certificate_pem' in the Repository Secrets section.")
-            else:
-                self.logger.info('ssl_certificate_pem: %s' % secrets_data.ssl_certificate_pem)
-            if secrets_data.ssl_key_pem is None:
-                raise Exception("Please, set the 'ssl_key_pem' in the Repository Secrets section.")
-            else:
-                self.logger.info('ssl_key_pem: %s' % secrets_data.ssl_key_pem)
 
         producer_conf = {
             # 'debug': 'security,broker,conf',
@@ -133,6 +124,7 @@ class KafkaProducerPiece(BasePiece):
         return OutputModel(
             bootstrap_servers=input_data.bootstrap_servers,
             security_protocol=input_data.security_protocol,
+            ssl_endpoint_identification_algorithm=input_data.ssl_endpoint_identification_algorithm,
             num_produced_messages=num_delivered_messages,
             topics=list(topics),
         )

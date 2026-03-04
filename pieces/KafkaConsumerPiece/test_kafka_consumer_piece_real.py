@@ -1,6 +1,7 @@
 import logging
 import os
 
+from common.enums import SecurityProtocol
 from domino.testing import piece_dry_run
 from domino.testing.utils import skip_envs
 
@@ -18,7 +19,7 @@ def test_consumer_piece_real_kafka():
         "bootstrap_servers": os.getenv("bootstrap.servers", "127.0.0.1:9093").split(","),
         "group_id": "test-consumer-group1",
         "client_id": "test-client1",
-        "security_protocol": "SSL",
+        "security_protocol": SecurityProtocol.SSL,
         "topics": [
             "topic.test1",
             "topic.test2",

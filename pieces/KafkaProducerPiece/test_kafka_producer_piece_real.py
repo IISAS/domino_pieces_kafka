@@ -1,6 +1,7 @@
 import logging
 import os
 
+from common.enums import SecurityProtocol
 from domino.testing import piece_dry_run
 from domino.testing.utils import skip_envs
 
@@ -16,7 +17,7 @@ logger = logging.getLogger(__name__)
 def test_kafka_producer_piece_real_kafka():
     input_data = {
         "bootstrap_servers": os.getenv("bootstrap.servers", "127.0.0.1:9093").split(","),
-        "security_protocol": "SSL",
+        "security_protocol": SecurityProtocol.SSL,
         "messages_file_path": "/mnt/data/workspace/SPICE/spice_domino_pieces/dry_run_results/input_messages.jsonl"
     }
 
